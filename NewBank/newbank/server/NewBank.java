@@ -38,10 +38,14 @@ public class NewBank {
 	}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String request) {
+	public synchronized String processRequest(CustomerID customer, String [] request) {
 		if(customers.containsKey(customer.getKey())) {
-			switch(request) {
+			switch(request [0]) {
 			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
+
+			case "NEWACCOUNT" : try { return newAccount(customer, request[1]);}
+								//error is caught if user doesn't specify a name for the new account
+								catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.";}
 			default : return "FAIL";
 			}
 		}
@@ -52,4 +56,8 @@ public class NewBank {
 		return (customers.get(customer.getKey())).accountsToString();
 	}
 
+	private String newAccount (CustomerID customer, String name) {
+		customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
+		return "SUCCESS";
+	}
 }
