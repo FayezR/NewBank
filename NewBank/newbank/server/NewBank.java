@@ -46,6 +46,10 @@ public class NewBank {
 			case "NEWACCOUNT" : try { return newAccount(customer, request[1]);}
 								//error is caught if user doesn't specify a name for the new account
 								catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.";}
+			
+			//External Money Transfer FR1.5 Added by Abhinav
+			case "PAY" : return payOthers(customer, request);
+			
 			default : return "FAIL";
 			}
 		}
@@ -60,4 +64,63 @@ public class NewBank {
 		customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
 		return "SUCCESS";
 	}
+	
+	//Method when "PAY" Keyword is used
+	private String payOthers (CustomerID customer, String[] request) {
+		if(request.length==1) { //only PAY mentioned
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+				"PAY FROM <YourAccountType> TO <Person/Company> <RecepientAccountType> <Amount>";
+		} else if (request.length==7 && request[1].equals("FROM") && request[3].equals("TO")) { //if the length of request matches the format
+			return makePayment(customer, request);			
+		} else { // for all other cases
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+					"PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType>  <Amount>";
+		}
+
+	}
+	
+	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
+	private String makePayment (CustomerID customer, String[] request) {
+		//check if donor's account type is correct
+		Customer donorCustomer  = customers.get(customer.getKey());
+		
+		if(!donorCustomer.checkAccountType(request[2])) {
+			return "Entered <YourAccountType> " + request[2] + "is incorrect"+ "\n" + "You have following accounts" + "\n" + showMyAccounts(customer);
+		}
+		
+		//check if the <Amount> entered in number
+		double amountToTransfer;
+		try {
+			amountToTransfer =  Double.parseDouble(request[6]);	
+		}catch (NumberFormatException e) {
+			return "Please enter numbers only for <Amount>";
+		}
+		
+		//check if the amount can be parsed as double & it is less than the amount in the balance
+		double donorAccountBalance = donorCustomer.accountType(request[2]).getBalance(); 
+		if(amountToTransfer > donorAccountBalance) {
+			return "Entered transfered amount " + amountToTransfer +",  is greater than the balance in your selected account";
+		}
+		
+		//check if the person/company to pay is in the bank database 
+		Customer recepientCustomer;
+		try {
+			recepientCustomer = customers.get(request[4]);	
+		}catch(Exception e) {
+			return "Entered Customer: " + request[4] + " does not have an account in the bank.";
+		}
+		
+		//check if the account type of person/company to pay is in the database
+		if(!recepientCustomer.checkAccountType(request[5])) {
+			return "Entered <RecepientAccountType> " + request[5] + " is incorrect";
+		}
+		
+		//if all the checks passed transfer the money
+		donorCustomer.accountType(request[2]).changeBalance(-amountToTransfer);
+		recepientCustomer.accountType(request[5]).changeBalance(amountToTransfer);
+		
+		return "SUCCESS - " + "Your account balance:" + "\n" + showMyAccounts(customer);
+	}
+	
+	
 }

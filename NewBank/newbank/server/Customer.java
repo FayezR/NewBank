@@ -21,4 +21,25 @@ public class Customer {
 	public void addAccount(Account account) {
 		accounts.add(account);		
 	}
+	
+	//check if the type of account exist
+	public boolean checkAccountType(String accountName) {
+		for(Account account: accounts) {
+			if(account.getAccountName().equals(accountName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//return the account name
+		public Account accountType(String accountName) {
+			for(Account account: accounts) {
+				if(account.getAccountName().equals(accountName)) {
+					return account;
+				}
+			}
+			return null;
+		}
+	
 }
