@@ -12,7 +12,7 @@ class TestNewBank {
 	private NewBank bank;
 	
 	@Test
-	void testProcessRequest() {
+	void testPayOthers() {
 		bank = NewBank.getBank();
 		CustomerID customer = bank.checkLogInDetails("Bhagy", "bhagy");
 		String [] request = new String [] {"PAY", "FROM", "Main", "TO", "John", "Checking", "100"};
@@ -20,6 +20,7 @@ class TestNewBank {
 		//String expectedOutput = "SUCCESS - " + "Your account balance:" + "\n" + showMyAccounts(customer);
 			
 		assertEquals(output.contains("SUCCESS"), true); // show success
+		assertEquals(output.contains("Main"), true); //show the account type
 		assertEquals(output.contains("900"), true); //show remaining balance
 	}
 
