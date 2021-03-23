@@ -29,6 +29,5 @@ public class Account {
 		openingBalance += changeAmount;
 	}
 	
-	
-	// test commit
+
 }
