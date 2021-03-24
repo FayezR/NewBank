@@ -33,11 +33,11 @@ public class NewBankClientHandler extends Thread{
 			CustomerID customer = bank.checkLogInDetails(userName, password);
 			// if the user is authenticated then get requests from the user and process them 
 			if(customer != null) {
-				out.println("Log In Successful. What do you want to do?");
+				out.println(Menu.printMenu());
 				while(true) {
 					String userInput = in.readLine();
 					System.out.println("Request from " + customer.getKey() + " - " + userInput);
-					// splits 'userInput' into seperate words and stores them in a String array 'request'
+					// splits 'userInput' into separate words and stores them in a String array 'request'
 					String [] request = userInput.split(" ");
 					String responce = bank.processRequest(customer, request);
 					out.println(responce);

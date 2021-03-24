@@ -41,28 +41,48 @@ public class NewBank {
 	public synchronized String processRequest(CustomerID customer, String [] request) {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request [0]) {
-			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
-
+			
+			//Showing the accounts
+			case "1" : return showMyAccounts(customer);
+			
+			//create new account
+			case "2" : try { return newAccount(customer, request[1]);}
+						//error is caught if user doesn't specify a name for the new account
+						catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
+			
+			//create new account (bis) - so that typing "NEWACCOUNT" also works.(This is so that we don't have to amend previous code -RT)
 			case "NEWACCOUNT" : try { return newAccount(customer, request[1]);}
-								//error is caught if user doesn't specify a name for the new account
-								catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.";}
+			//error is caught if user doesn't specify a name for the new account
+			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
+			
 			
 			//External Money Transfer FR1.5 Added by Abhinav
+			case "3" : return payOthers(customer, request);
+			
+			//Keeping "PAY" so that we don't have to amend previous code (RT)
 			case "PAY" : return payOthers(customer, request);
 			
-			default : return "FAIL";
+			
+			//Adding MicroLoan functionality (added by Raymond (RT))
+			case "4":  return microloan(customer, request);
+			
+			case "5": return "Calling view Loan.\n";
+			
+			case "6": return "Calling acquire Loan.\n";
+			
+			default : return "FAIL - Please enter the number of your selection only.\n";
 			}
 		}
 		return "FAIL";
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
-		return (customers.get(customer.getKey())).accountsToString();
+		return "Available accounts:\n" + (customers.get(customer.getKey())).accountsToString();
 	}
 
 	private String newAccount (CustomerID customer, String name) {
 		customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
-		return "SUCCESS";
+		return "SUCCESS- New account created.\n";
 	}
 	
 	//Method when "PAY" Keyword is used
@@ -74,9 +94,9 @@ public class NewBank {
 			return makePayment(customer, request);			
 		} else { // for all other cases
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
-					"PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType>  <Amount>";
+				   "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType>  <Amount>";
 		}
-
+		
 	}
 	
 	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
@@ -123,4 +143,15 @@ public class NewBank {
 	}
 	
 	
+	//Methods related to MicroLoan
+	
+		private String microloan(CustomerID customer, String[] request) {
+			
+			Microloan mc = new Microloan();
+			String welcome = mc.welcome();
+			
+			return welcome;
+		}
+	
+
 }
