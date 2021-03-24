@@ -115,6 +115,11 @@ public class NewBank {
 		double amountToTransfer;
 		try {
 			amountToTransfer =  Double.parseDouble(request[6]);	
+			//check for negative numbers
+			if(amountToTransfer <=0) {
+				return "Please enter <Amount> greater than zero";
+			}
+			
 		}catch (NumberFormatException e) {
 			return "Please enter numbers only for <Amount>";
 		}
@@ -129,6 +134,9 @@ public class NewBank {
 		Customer recepientCustomer;
 		try {
 			recepientCustomer = customers.get(request[4]);	
+			if (recepientCustomer ==null) {
+				return "Entered Customer: " + request[4] + " does not have an account in the bank.";
+			}
 		}catch(Exception e) {
 			return "Entered Customer: " + request[4] + " does not have an account in the bank.";
 		}
