@@ -42,6 +42,9 @@ public class NewBank {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request [0]) {
 			
+			//Show the Menu at request (RT)
+			case "MENU" : return Menu.printMenu();
+			
 			//Showing the accounts
 			case "1" : return showMyAccounts(customer);
 			
@@ -70,7 +73,7 @@ public class NewBank {
 			
 			case "6": return "Calling acquire Loan.\n";
 			
-			default : return "FAIL - Please enter the number of your selection only.\n";
+			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
 		}
 		return "FAIL";
@@ -148,9 +151,9 @@ public class NewBank {
 		private String microloan(CustomerID customer, String[] request) {
 			
 			Microloan mc = new Microloan();
-			String welcome = mc.welcome();
+			String offer = mc.offerLoan();
 			
-			return welcome;
+			return offer;
 		}
 	
 
