@@ -42,4 +42,13 @@ public class Customer {
 			return null;
 		}
 	
+		
+	public MicroLoan createMicroLoan(Integer principle, Integer interestRate) {
+		MicroLoan ml = new MicroLoan(principle, interestRate);
+		return ml;
+	}
+		
+		
+		
+		
 }

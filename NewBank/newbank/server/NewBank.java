@@ -78,8 +78,7 @@ public class NewBank {
 			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
 			
 			
-			
-			case "5": return "Calling view Loan.\n";
+			case "5": return "Calling createMicroLoan.\n";
 			
 			case "6": return "Calling acquire Loan.\n";
 			
@@ -166,19 +165,20 @@ public class NewBank {
 	
 	//Methods related to MicroLoan
 	
-		private String microloan(CustomerID customer, String[] request) {
-			
-			Microloan mc = new Microloan();
-			String offer = mc.offerLoan(customer,request);
-			
-			return offer;
-		}
-	
-		
+				
 		private String openMicroLoanAccount (CustomerID customer) {
 			String name="MicroLoan";
 			customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
 			return "SUCCESS- New MicroLoan account created.\n";
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 }
