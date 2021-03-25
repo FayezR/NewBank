@@ -9,7 +9,7 @@ public static String printMenu() {
 			+ "1- Check your accounts balances.\n"
 			+ "2- Create new account.\n"
 			+ "3- Pay counterparties.\n"
-			+ "4- Offer a Micro-Loan.\n"
+			+ "4- Open a MicroLoan account.\n"
 			+ "5- View Micro-Loans Available\n"
 			+ "6- Acquire a Micro-Loan.\n"
 			+ "(Select a number or type \"MENU\" to see the Menu again).\n";

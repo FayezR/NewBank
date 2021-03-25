@@ -6,7 +6,7 @@ public class Microloan {
 	
 	//methods
 	
-	public String offerLoan() {
+	public String offerLoan(CustomerID customer, String[] request) {
 		
 		String offer = "Offer a Micro-Loan";
 		

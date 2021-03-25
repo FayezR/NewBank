@@ -67,7 +67,17 @@ public class NewBank {
 			
 			
 			//Adding MicroLoan functionality (added by Raymond (RT))
-			case "4":  return microloan(customer, request);
+			
+			//Create a MicroLoan A/C
+			case "4":  try { return openMicroLoanAccount(customer);}
+			//error is caught if user doesn't specify a name for the new account
+			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
+			//Create a MicroLoan A/C
+			case "OpenMicroLoanAccount":  try { return openMicroLoanAccount(customer);}
+			//error is caught if user doesn't specify a name for the new account
+			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
+			
+			
 			
 			case "5": return "Calling view Loan.\n";
 			
@@ -159,10 +169,16 @@ public class NewBank {
 		private String microloan(CustomerID customer, String[] request) {
 			
 			Microloan mc = new Microloan();
-			String offer = mc.offerLoan();
+			String offer = mc.offerLoan(customer,request);
 			
 			return offer;
 		}
 	
+		
+		private String openMicroLoanAccount (CustomerID customer) {
+			String name="MicroLoan";
+			customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
+			return "SUCCESS- New MicroLoan account created.\n";
+		}
 
 }
