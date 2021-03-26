@@ -39,13 +39,6 @@ public class NewBankServer extends Thread{
 		new NewBankServer(14002).start();
 		
 		
-		System.out.println("Testing area");
-		MicroLoan ml = new MicroLoan(1000,12);
-		MicroLoan ml2 = new MicroLoan(500, 10);
-		System.out.println(ml.toString());
-		MicroLoanMarket.microLoansAvailable.add(ml);
-		MicroLoanMarket.microLoansAvailable.add(ml2);
-		String l = MicroLoanMarket.showMicroLoansAvailable();
-		System.out.println(l);
+		
 	}
 }

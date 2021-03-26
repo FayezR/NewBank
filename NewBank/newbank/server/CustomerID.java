@@ -10,4 +10,14 @@ public class CustomerID {
 	public String getKey() {
 		return key;
 	}
+
+	@Override
+	public String toString() {
+		return "CustomerID [key=" + key + ", getKey()=" + getKey() + ", getClass()=" + getClass() + ", hashCode()="
+				+ hashCode() + ", toString()=" + super.toString() + "]";
+	}
+	
+	
+	
+	
 }

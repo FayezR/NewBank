@@ -7,6 +7,7 @@ public class NewBank {
 	private static final NewBank bank = new NewBank();
 	private HashMap<String,Customer> customers;
 	
+	private String tempLoanAmount="0"; 
 		
 	private NewBank() {
 		customers = new HashMap<>();
@@ -19,11 +20,11 @@ public class NewBank {
 		customers.put("Bhagy", bhagy);
 		
 		Customer christina = new Customer();
-		christina.addAccount(new Account("Savings", 1500.0));
+		christina.addAccount(new Account("Main", 1500.0));
 		customers.put("Christina", christina);
 		
 		Customer john = new Customer();
-		john.addAccount(new Account("Checking", 250.0));
+		john.addAccount(new Account("Main", 250.0));
 		customers.put("John", john);
 	}
 	
@@ -69,7 +70,7 @@ public class NewBank {
 			
 			//Adding MicroLoan functionality (added by Raymond (RT))
 			
-			//Create a MicroLoan A/C
+			//Create a MicroLoan account
 			case "4":  try { return openMicroLoanAccount(customer);}
 			//error is caught if user doesn't specify a name for the new account
 			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
@@ -82,19 +83,30 @@ public class NewBank {
 			case "5": return "To create a MicroLoan, please enter command in the form:\n "
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
+				tempLoanAmount=request[1];
 				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4])) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
 					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
 			}
-
 			
-			case "6": try{return MicroLoanMarket.showMicroLoansAvailable();
+			case "6": 
+			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};	
+			return payOthers(customer, request1);
+			
+			case "7": try{return MicroLoanMarket.showMicroLoansAvailable();
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
 			
+			
+			case "8": return "Acquiring a MicroLoan...";
+			
+			case "TEST": return  tempLoanAmount ;
+						
+			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
+			
 		}
 		return "FAIL";
 	}

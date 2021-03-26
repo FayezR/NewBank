@@ -11,8 +11,9 @@ public static String printMenu() {
 			+ "3- Pay counterparties.\n"
 			+ "4- Open a MicroLoan Account.\n"
 			+ "5- Create a MicroLoan.\n"
-			+ "6- Show available MicroLoans\n"
-			+ "7- Acquire a Micro-Loan.\n"
+			+ "6- Activate the MicroLoan (meaning putting the MicroLoan account in funds).\n"
+			+ "7- Show MicroLoans Available.\n"
+			+ "8- Acquire a Micro-Loan.\n"
 			+ "(Select a number or type \"MENU\" to see the Menu again).\n";
 	return menu;
 }
