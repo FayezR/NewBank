@@ -42,4 +42,20 @@ public class Customer {
 			return null;
 		}
 	
+		
+	public String createMicroLoan(Integer principle, Integer interestRate) {
+		MicroLoan ml = new MicroLoan(principle, interestRate);
+		MicroLoanMarket.microLoansAvailable.add(ml);
+		return "Success: MicroLoan created: " + ml.toString(); 
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [accounts=" + accounts + ", accountsToString()=" + accountsToString() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+		
+		
+		
+		
 }
