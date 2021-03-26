@@ -38,13 +38,14 @@ public class NewBankServer extends Thread{
 		// starts a new NewBankServer thread on a specified port number
 		new NewBankServer(14002).start();
 		
-		///
+		
 		System.out.println("Testing area");
-		
-		Customer rt = new Customer();
-		CustomerID id = new CustomerID("rtr");
-		MicroLoan m2 = rt.createMicroLoan(1000, 17);
-		System.out.println(m2.toString());
-		
+		MicroLoan ml = new MicroLoan(1000,12);
+		MicroLoan ml2 = new MicroLoan(500, 10);
+		System.out.println(ml.toString());
+		MicroLoanMarket.microLoansAvailable.add(ml);
+		MicroLoanMarket.microLoansAvailable.add(ml2);
+		String l = MicroLoanMarket.showMicroLoansAvailable();
+		System.out.println(l);
 	}
 }

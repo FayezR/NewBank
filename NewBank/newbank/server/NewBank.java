@@ -7,6 +7,7 @@ public class NewBank {
 	private static final NewBank bank = new NewBank();
 	private HashMap<String,Customer> customers;
 	
+		
 	private NewBank() {
 		customers = new HashMap<>();
 		addTestData();
@@ -78,9 +79,19 @@ public class NewBank {
 			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
 			
 			
-			case "5": return "Calling createMicroLoan.\n";
+			case "5": return "To create a MicroLoan, please enter command in the form:\n "
+						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
+			case "PRINCIPLE": try {
+				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4])) ;
+			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
+					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
+			}
+
 			
-			case "6": return "Calling acquire Loan.\n";
+			case "6": try{return MicroLoanMarket.showMicroLoansAvailable();
+			}catch(ArrayIndexOutOfBoundsException e) {
+				return "No available MicroLoans at this Moment";
+			}
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}

@@ -43,9 +43,10 @@ public class Customer {
 		}
 	
 		
-	public MicroLoan createMicroLoan(Integer principle, Integer interestRate) {
+	public String createMicroLoan(Integer principle, Integer interestRate) {
 		MicroLoan ml = new MicroLoan(principle, interestRate);
-		return ml;
+		MicroLoanMarket.microLoansAvailable.add(ml);
+		return "Success: MicroLoan created: " + ml.toString() + MicroLoanMarket.showMicroLoansAvailable(); 
 	}
 		
 		
