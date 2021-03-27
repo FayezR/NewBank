@@ -84,7 +84,7 @@ public class NewBank {
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
-				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4])) ;
+				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
 					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
 			}
@@ -93,15 +93,28 @@ public class NewBank {
 			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};	
 			return payOthers(customer, request1);
 			
-			case "7": try{return MicroLoanMarket.showMicroLoansAvailable();
+			case "7": try{return "Following MicroLoans are available to take:\n"+ MicroLoanMarket.showMicroLoansAvailable() +"\n";
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
 			
 			
-			case "8": return "Acquiring a MicroLoan...";
+			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
+					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+			case "CONFIRM": try {
+				return "The loan you want is:\n"+  
+						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n" 
+						+"Calling the method to take up loan...";
+				}catch(ArrayIndexOutOfBoundsException e) {
+					return "To take up a MicroLoan, please enter command in the form:\n "
+							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+				}
 			
-			case "TEST": return  tempLoanAmount ;
+			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
+					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
+					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
+					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
+			
 						
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
@@ -194,6 +207,8 @@ public class NewBank {
 			customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
 			return "SUCCESS- New MicroLoan account created.\n";
 		}
+		
+		
 		
 		
 		

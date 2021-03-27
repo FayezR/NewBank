@@ -43,10 +43,10 @@ public class Customer {
 		}
 	
 		
-	public String createMicroLoan(Integer principle, Integer interestRate) {
-		MicroLoan ml = new MicroLoan(principle, interestRate);
+	public String createMicroLoan(Integer principle, Integer interestRate, CustomerID lender) {
+		MicroLoan ml = new MicroLoan(principle, interestRate, lender);
 		MicroLoanMarket.microLoansAvailable.add(ml);
-		return "Success: MicroLoan created: " + ml.toString(); 
+		return "Success: MicroLoan created: " + ml.toString();
 	}
 
 	@Override
@@ -56,6 +56,8 @@ public class Customer {
 	}
 		
 		
+	
 		
+	
 		
 }

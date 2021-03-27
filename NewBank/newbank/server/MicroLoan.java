@@ -9,12 +9,13 @@ public class MicroLoan {
 	private CustomerID borrower;
 	
 	//constructor
+	/*
 	public MicroLoan(Integer principle, Integer interestRate) {
 		super();
 		this.principle = principle;
 		this.interestRate = interestRate;
 		
-	}
+	}*/
 	
 	public MicroLoan(Integer principle, Integer interestRate, CustomerID lender) {
 		super();
@@ -68,10 +69,18 @@ public class MicroLoan {
 	
 	@Override
 	public String toString() {
-		return "MicroLoan [principle=" + principle + ", interestRate=" + interestRate + "]";
+		if(this.borrower==null) {
+			return "MicroLoan [principle=" + principle + ", interestRate=" + interestRate + ", lender=" + lender.getKey()
+			+ ", borrower=" + borrower + "]";
+		}else {
+			return "MicroLoan [principle=" + principle + ", interestRate=" + interestRate + ", lender=" + lender.getKey()
+			+ ", borrower=" + borrower.getKey() + "]";
+		}
 	}
 
 
+	
+	
 	
 
 	
