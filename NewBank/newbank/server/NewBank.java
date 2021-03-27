@@ -84,7 +84,7 @@ public class NewBank {
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
-				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4])) ;
+				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
 					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
 			}
@@ -93,7 +93,7 @@ public class NewBank {
 			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};	
 			return payOthers(customer, request1);
 			
-			case "7": try{return MicroLoanMarket.showMicroLoansAvailable();
+			case "7": try{return "Following MicroLoans are available to take:\n"+ MicroLoanMarket.showMicroLoansAvailable() +"\n";
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
