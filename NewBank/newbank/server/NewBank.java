@@ -99,9 +99,22 @@ public class NewBank {
 			}
 			
 			
-			case "8": return "Acquiring a MicroLoan...";
+			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
+					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+			case "CONFIRM": try {
+				return "The loan you want is:\n"+  
+						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n" 
+						+"Calling the method to take up loan...";
+				}catch(ArrayIndexOutOfBoundsException e) {
+					return "To take up a MicroLoan, please enter command in the form:\n "
+							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+				}
 			
-			case "TEST": return  tempLoanAmount ;
+			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
+					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
+					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
+					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
+			
 						
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
