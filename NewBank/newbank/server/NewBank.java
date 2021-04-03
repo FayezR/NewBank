@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NewBank {
@@ -46,7 +47,9 @@ public class NewBank {
 
 	public synchronized CustomerID checkLogInDetails(String userName, String password) {
 		if(customers.containsKey(userName)) {
-			return new CustomerID(userName);
+			CustomerID customer = new CustomerID(userName); 
+			//customers.get(customer.getKey()).setTimeAtLastActivity(LocalTime.now()); //store login time
+			return customer;
 		}
 		return null;
 	}
@@ -54,6 +57,8 @@ public class NewBank {
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String [] request) {
 		if(customers.containsKey(customer.getKey())) {
+			
+			
 			switch(request [0]) {
 			
 			//Show the Menu at request (RT)

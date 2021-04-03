@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.LocalTime;
 
 public class NewBankClientHandler extends Thread{
 	
@@ -33,8 +36,16 @@ public class NewBankClientHandler extends Thread{
 			CustomerID customer = bank.checkLogInDetails(userName, password);
 			// if the user is authenticated then get requests from the user and process them 
 			if(customer != null) {
+				customer.setTimeAtLastActivity(LocalTime.now());
 				out.println(Menu.printMenu());
 				while(true) {
+					//check for last activity > 2 mins
+					Long timeDuration = Duration.between(customer.getTimeAtLastActivity(), LocalTime.now() ).toMinutes();
+					if(timeDuration>=1) {
+						Thread.currentThread().interrupt();
+						this.run();
+					}
+					customer.setTimeAtLastActivity(LocalTime.now());
 					String userInput = in.readLine();
 					System.out.println("Request from " + customer.getKey() + " - " + userInput);
 					// splits 'userInput' into separate words and stores them in a String array 'request'
