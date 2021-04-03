@@ -127,7 +127,9 @@ public class NewBank {
 					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
 					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
 			
-						
+			//Internal Money Transfer FR1.5 Added by Abhinav
+			case "9" : return paySelf(customer, request);
+			case "TRANSFER" : return paySelf(customer, request);			
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
@@ -158,6 +160,21 @@ public class NewBank {
 		} else { // for all other cases
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
 				   "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType>  <Amount>";
+		}
+		
+	}
+	
+	//Method when "item-9 pay self is selected" Keyword is used
+	private String paySelf (CustomerID customer, String[] request) {
+		if(request.length==1) { //only TRANSFER mentioned
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+				"TRANSFER FROM <YourAccountType> TO <RecepientAccountType> <Amount>";
+		} else if (request.length==6 && request[1].equals("FROM") && request[3].equals("TO")) { //if the length of request matches the format
+			String [] requestUpdated = new String[] {"PAY", request[1], request[2], request[3], customer.getKey(), request[4], request[5] };
+			return makePayment(customer, requestUpdated);			
+		} else { // for all other cases
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+				   "TRANSFER FROM <AccountType> TO <RecepientAccountType>  <Amount>";
 		}
 		
 	}
