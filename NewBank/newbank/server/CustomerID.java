@@ -1,5 +1,7 @@
 package newbank.server;
 
+import java.util.UUID;
+
 public class CustomerID {
 	private String key;
 	
