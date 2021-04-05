@@ -38,6 +38,9 @@ public class NewBank {
 		john.addAccount(new Account("Main", 250.0));
 		users.put("John", john);
 		updateAccountInfo("John", "John", "John", String.valueOf(250.0), "-", "-", "-");
+
+		Admin admin = new Admin("Admin", "12345");
+		users.put("Admin", admin);
 	}
 
 
