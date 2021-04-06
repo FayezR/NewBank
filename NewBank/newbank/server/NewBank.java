@@ -117,22 +117,41 @@ public class NewBank {
 				Integer loanNumber = Integer.parseInt(request[5]);
 				//update the requested loan with the borrower name
 				MicroLoanMarket.microLoansAvailable.get(loanNumber).setBorrower(customer);
-				//lender to pay the loan
-				
-				//payOthers(MicroLoanMarket.microLoansAvailable.get(loanNumber).getLender(),payInstructions);
-				return "The loan is confirmed to you (borrower's field updated), the lender shall initiate the payment:\n"+  
+							return "The loan is confirmed to you (borrower's field updated), the lender shall initiate the payment:\n"+  
 						MicroLoanMarket.microLoansAvailable.get(loanNumber).toString() + "\n";
 				}catch(ArrayIndexOutOfBoundsException e) {
 					return "To take up a MicroLoan, please enter command in the form:\n"
 							 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
 			
+			
+			case "9": return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"
+			 + "TRANSFER LOAN <The number of the loan starting by counting 0>";
+			case "TRANSFER": try {
+				Integer loanNumber = Integer.parseInt(request[2]);
+				CustomerID borrower = MicroLoanMarket.microLoansAvailable.get(loanNumber).getBorrower();
+				String loanAmount = MicroLoanMarket.microLoansAvailable.get(loanNumber).getPrinciple().toString();
+				String[] payInstructions = {"PAY", "FROM", "MicroLoan", "TO", borrower.getKey() , "MicroLoan", loanAmount};	
+				return payOthers(customer, payInstructions);
+			}catch(ArrayIndexOutOfBoundsException e) {
+				 return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"
+						 + "TRANSFER LOAN <The number of the loan starting by counting 0>";
+			}
+			
+			
+			
+			
+			
 			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
 					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
 					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
-					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
+					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() + "\n" 
+					+ "Borrower: " + MicroLoanMarket.microLoansAvailable.get(0).getBorrower().getKey();
 			
-						
+			
+			
+			
+			
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
