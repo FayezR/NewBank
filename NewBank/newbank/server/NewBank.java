@@ -111,15 +111,20 @@ public class NewBank {
 			}
 			
 			
-			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
-					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
-			case "CONFIRM": try {
-				return "The loan you want is:\n"+  
-						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n" 
-						+"Calling the method to take up loan...";
+			case "8": return "To take up a MicroLoan, please enter command in the form:\n"
+					 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+			case "CONFIRMING": try {
+				Integer loanNumber = Integer.parseInt(request[5]);
+				//update the requested loan with the borrower name
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setBorrower(customer);
+				//lender to pay the loan
+				
+				//payOthers(MicroLoanMarket.microLoansAvailable.get(loanNumber).getLender(),payInstructions);
+				return "The loan is confirmed to you (borrower's field updated), the lender shall initiate the payment:\n"+  
+						MicroLoanMarket.microLoansAvailable.get(loanNumber).toString() + "\n";
 				}catch(ArrayIndexOutOfBoundsException e) {
-					return "To take up a MicroLoan, please enter command in the form:\n "
-							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+					return "To take up a MicroLoan, please enter command in the form:\n"
+							 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
 			
 			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
