@@ -1,9 +1,12 @@
 package newbank.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NewBank {
@@ -68,6 +71,7 @@ public class NewBank {
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String [] request) {
 		if(users.containsKey(customer.getKey())) {
+
 			switch(request [0]) {
 			
 			//Show the Menu at request (RT)
@@ -135,13 +139,16 @@ public class NewBank {
 					return "To take up a MicroLoan, please enter command in the form:\n "
 							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
+			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
 			
 			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
 					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
 					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
 					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
 			
-						
+			//Internal Money Transfer FR1.5 Added by Abhinav
+			case "10" : return paySelf(customer, request);
+			case "TRANSFER" : return paySelf(customer, request);			
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
@@ -176,10 +183,27 @@ public class NewBank {
 		
 	}
 	
+	//Method when "item-9 pay self is selected" Keyword is used
+	private String paySelf (CustomerID customer, String[] request) {
+		if(request.length==1) { //only TRANSFER mentioned
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+				"TRANSFER FROM <YourAccountType> TO <RecepientAccountType> <Amount>";
+		} else if (request.length==6 && request[1].equals("FROM") && request[3].equals("TO")) { //if the length of request matches the format
+			String [] requestUpdated = new String[] {"PAY", request[1], request[2], request[3], customer.getKey(), request[4], request[5] };
+			return makePayment(customer, requestUpdated);			
+		} else { // for all other cases
+			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
+				   "TRANSFER FROM <AccountType> TO <RecepientAccountType>  <Amount>";
+		}
+		
+	}
+	
 	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
 	private String makePayment (CustomerID customer, String[] request) {
 		//check if donor's account type is correct
+
 		Customer donorCustomer  = (Customer) users.get(customer.getKey());
+		String notes;
 		
 		if(!donorCustomer.checkAccountType(request[2])) {
 			return "Entered <YourAccountType> " + request[2] + "is incorrect"+ "\n" + "You have following accounts" + "\n" + showMyAccounts(customer);
@@ -209,6 +233,8 @@ public class NewBank {
 		try {
 			recepientCustomer = (Customer) users.get(request[4]);
 			if (recepientCustomer ==null) {
+				notes = "Recipient does not have an account in the bank";
+				updateTransactionHistory(donorCustomer, "pay to others", false, notes);
 				return "Entered Customer: " + request[4] + " does not have an account in the bank.";
 			}
 		}catch(Exception e) {
@@ -217,6 +243,8 @@ public class NewBank {
 		
 		//check if the account type of person/company to pay is in the database
 		if(!recepientCustomer.checkAccountType(request[5])) {
+			notes = "Recipient does not have the account indicated in transaction";
+			updateTransactionHistory(donorCustomer, "pay to others", false, notes);
 			return "Entered <RecepientAccountType> " + request[5] + " is incorrect";
 		}
 		
@@ -225,15 +253,14 @@ public class NewBank {
 		recepientCustomer.accountType(request[5]).changeBalance(amountToTransfer);
 		updateAccountBalance(donorCustomer, request[2], donorCustomer.accountType(request[2]).getBalance());
 		updateAccountBalance(recepientCustomer, request[5], recepientCustomer.accountType(request[5]).getBalance());
-		String notes = "Transferred " + getKeyFromValue(users, recepientCustomer) + " " + amountToTransfer;
+		notes = "Transferred " + getKeyFromValue(users, recepientCustomer) + " " + amountToTransfer;
+
 		updateTransactionHistory(donorCustomer, "pay to others", true, notes);
 		return "SUCCESS - " + "Your account balance:" + "\n" + showMyAccounts(customer);
 	}
-	
-	
+
 	//Methods related to MicroLoan
-	
-				
+
 	private String openMicroLoanAccount (CustomerID customer) {
 		String name="MicroLoan";
 		String notes = "Microloan account added";
@@ -242,6 +269,39 @@ public class NewBank {
 		updateTransactionHistory((Customer) users.get(customer.getKey()), "new account added", true, notes);
 		return "SUCCESS- New MicroLoan account created.\n";
 	}
+	
+	
+	//all transactions
+	private String showTransactionHistory(Customer customer)
+	{
+	
+		String query = "SELECT date, type, result, notes FROM transactions WHERE username = '"+getKeyFromValue(users, customer)+"';";
+		String transactions = "Your transaction history: \n";
+		Statement statement;
+
+		ResultSet rs;
+		try 
+		{	
+			statement = connection.createStatement();
+			rs = statement.executeQuery(query);
+			
+			while (rs.next()) 
+			{
+				String transaction = rs.getString("date") + " " + rs.getString("type") + " " + rs.getString("result") + " " + rs.getString("notes");
+				transactions = transactions + transaction + "\n";
+			}
+			return transactions;
+		} 
+		catch (SQLException e)
+		{
+			
+			e.printStackTrace();
+		}
+		
+		return "Fail";
+	}
+	
+	
 		
 	//Database methods
 	public static <Key, Value> Key getKeyFromValue(Map<Key, User> map, Value value)
@@ -323,7 +383,10 @@ public class NewBank {
 		try 
 		{
 			String createTable3 = "CREATE TABLE IF NOT EXISTS transactions (\n"
-	                + "	username text PRIMARY KEY,\n"
+	                + "	username text NOT NULL,\n"
+	                + "	day text NOT NULL,\n"
+	                + "	month text NOT NULL,\n"
+	                + "	year text NOT NULL,\n"
 	                + "	date text NOT NULL,\n"
 	                + "	type text NOT NULL,\n"
 	                + "	result text NOT NULL,\n"
@@ -341,16 +404,18 @@ public class NewBank {
 			e.printStackTrace();
 		}				
 	}
-		
-	private void loadAccountBalancesFromDatabase()
+	
+	//to be added
+	private void loadAccountBalancesFromDatabase(HashMap<String,User> customers)
 	{
+		
 		
 	}
 	
 	private void updateTransactionHistory(Customer customer, String transactionType, boolean result, String notes)
 	{
 		PreparedStatement ps;
-		String statement = "INSERT INTO transactions (username, date, type, result, notes) VALUES(?, ?, ?, ?, ?)";
+		String statement = "INSERT INTO transactions (username, day, month, year, date, type, result, notes) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		String outcome = "FAILURE";
 		if(result = true)
@@ -359,29 +424,30 @@ public class NewBank {
 		}
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+		DateTimeFormatter day = DateTimeFormatter.ofPattern("dd"); 
+		DateTimeFormatter month = DateTimeFormatter.ofPattern("MM");  
+		DateTimeFormatter year = DateTimeFormatter.ofPattern("yyyy");  
 		LocalDateTime now = LocalDateTime.now();  
 		
 		try
 		{
 			ps = connection.prepareStatement(statement);
 		    ps.setString(1, getKeyFromValue(users, customer));
-		    ps.setString(2, dtf.format(now));
-		    ps.setString(3, transactionType);
-		    ps.setString(4, outcome);
-		    ps.setString(5, notes);
+		    ps.setString(2, day.format(now));
+		    ps.setString(3, month.format(now));
+		    ps.setString(4, year.format(now));
+		    ps.setString(5, dtf.format(now));
+		    ps.setString(6, transactionType);
+		    ps.setString(7, outcome);
+		    ps.setString(8, notes);
 		    ps.executeUpdate();
 		    System.out.println("Transactions updated!");
 		}
 		catch (Exception e)
 		{
-			System.out.println("transactions couldn't be updated");
+			System.out.println("Transactions couldn't be updated");
 			e.printStackTrace();
 		}
-	}
-	
-	private void showTransactionHistory(Customer customer)
-	{
-		
 	}
 	
 	public void updateAccountInfo(String id, String username, String name, String main, String savings, String checking, String microloan)

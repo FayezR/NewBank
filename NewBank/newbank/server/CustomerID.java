@@ -1,9 +1,10 @@
 package newbank.server;
 
-import java.util.UUID;
+import java.time.LocalTime;
 
 public class CustomerID {
 	private String key;
+	private LocalTime timeAtLastActivity;
 	
 	public CustomerID(String key) {
 		this.key = key;
@@ -18,10 +19,16 @@ public class CustomerID {
 		return "CustomerID [key=" + key + ", getKey()=" + getKey() + ", getClass()=" + getClass() + ", hashCode()="
 				+ hashCode() + ", toString()=" + super.toString() + "]";
 	}
+
+	//setter for last activity
+	public void setTimeAtLastActivity(LocalTime lastActivityTime) {
+		timeAtLastActivity = lastActivityTime;
+	}
 	
-	
-	
-	
+	//getter for last activity
+	public LocalTime getTimeAtLastActivity() {
+		return timeAtLastActivity;
+	}
 	
 	
 }
