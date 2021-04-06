@@ -133,7 +133,7 @@ public class NewBank {
 					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
 			
 			//Internal Money Transfer FR1.5 Added by Abhinav
-			case "9" : return paySelf(customer, request);
+			case "10" : return paySelf(customer, request);
 			case "TRANSFER" : return paySelf(customer, request);			
 			
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
