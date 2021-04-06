@@ -25,17 +25,15 @@ public class NewBankClientHandler extends Thread{
 	public void run() {
 		// keep getting requests from the client and processing them
 		try {
-			// ask for user name
 			out.println("Enter Username");
 			String userName = in.readLine();
-			// ask for password
 			out.println("Enter Password");
 			String password = in.readLine();
 			out.println("Checking Details...");
-			// authenticate user and get customer ID token from bank for use in subsequent requests
-			CustomerID customer = bank.checkLogInDetails(userName, password);
-			// if the user is authenticated then get requests from the user and process them 
-			if(customer != null) {
+
+			// authenticate user - checks if Username exists and password is correct -FR
+			if(bank.checkLogInDetails(userName, password)) {
+				CustomerID customer = bank.getCustomerID(userName); //get customer ID token from bank for use in subsequent requests
 				customer.setTimeAtLastActivity(LocalTime.now());
 				out.println(Menu.printMenu());
 				while(true) {
@@ -48,15 +46,18 @@ public class NewBankClientHandler extends Thread{
 					customer.setTimeAtLastActivity(LocalTime.now());
 					String userInput = in.readLine();
 					System.out.println("Request from " + customer.getKey() + " - " + userInput);
-					// splits 'userInput' into separate words and stores them in a String array 'request'
-					String [] request = userInput.split(" ");
+					// splits 'userInput' into separate words and stores them in a String array 'request' -FR
+					String[] request = userInput.split(" ");
 					String responce = bank.processRequest(customer, request);
 					out.println(responce);
 				}
 			}
-			else {
-				out.println("Log In Failed");
+
+			else{
+				out.println("Username or password is incorrect. Try entering your username and password again \n");
+				run();
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

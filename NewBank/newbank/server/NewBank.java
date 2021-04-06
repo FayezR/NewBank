@@ -12,55 +12,66 @@ import java.time.format.DateTimeFormatter;
 public class NewBank {
 	
 	private static final NewBank bank = new NewBank();
-	private HashMap<String,Customer> customers;
+	private HashMap<String,User> users;
 	
 	private String tempLoanAmount="0"; 
 	
 	private Connection connection;
 	private static final String updateAllAccountInfo = "INSERT INTO account_info(id, username, name, main, savings, checking, microloan) VALUES(?, ?, ?, ?, ?, ?, ?)";
-	
-		
+
+
 	private NewBank() {
-		customers = new HashMap<>();
+		users = new HashMap<>();
 		connectDB();
 		addTestData();
 	}
 		
 	private void addTestData() {
-		Customer bhagy = new Customer();
+		Customer bhagy = new Customer("Bhagy", "12345");
 		bhagy.addAccount(new Account("Main", 1000.0));
-		customers.put("Bhagy", bhagy);
+		users.put("Bhagy", bhagy);
 		updateAccountInfo("Bhagy", "Bhagy", "Bhagy", String.valueOf(1000.0), "-", "-", "-");
 		
-		Customer christina = new Customer();
+		Customer christina = new Customer("Christina", "12345");
 		christina.addAccount(new Account("Main", 1500.0));
-		customers.put("Christina", christina);
+		users.put("Christina", christina);
 		updateAccountInfo("Christina", "Christina", "Christina", String.valueOf(1500.0), "-", "-", "-");
 		
-		Customer john = new Customer();
+		Customer john = new Customer("John", "12345");
 		john.addAccount(new Account("Main", 250.0));
-		customers.put("John", john);
+		users.put("John", john);
 		updateAccountInfo("John", "John", "John", String.valueOf(250.0), "-", "-", "-");
+
+		Admin admin = new Admin("Admin", "12345");
+		users.put("Admin", admin);
 	}
-	
+
+
 	public static NewBank getBank() {
 		return bank;
 	}
 
-	public synchronized CustomerID checkLogInDetails(String userName, String password) {
-		if(customers.containsKey(userName)) {
-			CustomerID customer = new CustomerID(userName); 
-			//customers.get(customer.getKey()).setTimeAtLastActivity(LocalTime.now()); //store login time
-			return customer;
+	public synchronized Boolean checkLogInDetails(String userName, String password) {
+		if (users.containsKey(userName)){ //checks if username exists
+			User user = users.get(userName);
+			if (user.getPass().equals(password)){ //checks if password is correct - FR
+				 CustomerID cID = new CustomerID(userName);
+				 return true;
+			}
+			else {return false;}
 		}
-		return null;
+		return false;
+	}
+
+	public synchronized CustomerID getCustomerID (String userName){
+		CustomerID cID = new CustomerID(userName);
+		return cID;
 	}
 
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String [] request) {
-		if(customers.containsKey(customer.getKey())) {
-			
-			
+		if(users.containsKey(customer.getKey())) {
+
 			switch(request [0]) {
 			
 			//Show the Menu at request (RT)
@@ -103,7 +114,7 @@ public class NewBank {
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
-				return customers.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
+				return users.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
 					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
 			}
@@ -128,7 +139,7 @@ public class NewBank {
 					return "To take up a MicroLoan, please enter command in the form:\n "
 							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
-			case "9": return  showTransactionHistory(customers.get(customer.getKey()));
+			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
 			
 			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
 					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
@@ -147,14 +158,14 @@ public class NewBank {
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
-		return "Available accounts:\n" + (customers.get(customer.getKey())).accountsToString();
+		return "Available accounts:\n" + (users.get(customer.getKey())).accountsToString();
 	}
 
 	private String newAccount (CustomerID customer, String name) {
 		String notes = name + " account added";
-		customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
-		addNewAccount(customers.get(customer.getKey()), name);
-		updateTransactionHistory(customers.get(customer.getKey()), "new account added", true, notes);
+		users.get(customer.getKey()).addAccount(new Account (name, 0.00));
+		addNewAccount((Customer) users.get(customer.getKey()), name);
+		updateTransactionHistory((Customer) users.get(customer.getKey()), "new account added", true, notes);
 		return "SUCCESS- New account created.\n";
 	}
 	
@@ -190,7 +201,8 @@ public class NewBank {
 	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
 	private String makePayment (CustomerID customer, String[] request) {
 		//check if donor's account type is correct
-		Customer donorCustomer  = customers.get(customer.getKey());
+
+		Customer donorCustomer  = (Customer) users.get(customer.getKey());
 		String notes;
 		
 		if(!donorCustomer.checkAccountType(request[2])) {
@@ -219,7 +231,7 @@ public class NewBank {
 		//check if the person/company to pay is in the bank database 
 		Customer recepientCustomer;
 		try {
-			recepientCustomer = customers.get(request[4]);	
+			recepientCustomer = (Customer) users.get(request[4]);
 			if (recepientCustomer ==null) {
 				notes = "Recipient does not have an account in the bank";
 				updateTransactionHistory(donorCustomer, "pay to others", false, notes);
@@ -241,20 +253,20 @@ public class NewBank {
 		recepientCustomer.accountType(request[5]).changeBalance(amountToTransfer);
 		updateAccountBalance(donorCustomer, request[2], donorCustomer.accountType(request[2]).getBalance());
 		updateAccountBalance(recepientCustomer, request[5], recepientCustomer.accountType(request[5]).getBalance());
-		notes = "Transferred to " + getKeyFromValue(customers, recepientCustomer) + " " + amountToTransfer;
+		notes = "Transferred " + getKeyFromValue(users, recepientCustomer) + " " + amountToTransfer;
+
 		updateTransactionHistory(donorCustomer, "pay to others", true, notes);
 		return "SUCCESS - " + "Your account balance:" + "\n" + showMyAccounts(customer);
 	}
-	
-	
+
 	//Methods related to MicroLoan
-		
+
 	private String openMicroLoanAccount (CustomerID customer) {
 		String name="MicroLoan";
 		String notes = "Microloan account added";
-		customers.get(customer.getKey()).addAccount(new Account (name, 0.00));
-		addNewAccount(customers.get(customer.getKey()), name);
-		updateTransactionHistory(customers.get(customer.getKey()), "new account added", true, notes);
+		users.get(customer.getKey()).addAccount(new Account (name, 0.00));
+		addNewAccount((Customer) users.get(customer.getKey()), name);
+		updateTransactionHistory((Customer) users.get(customer.getKey()), "new account added", true, notes);
 		return "SUCCESS- New MicroLoan account created.\n";
 	}
 	
@@ -263,7 +275,7 @@ public class NewBank {
 	private String showTransactionHistory(Customer customer)
 	{
 	
-		String query = "SELECT date, type, result, notes FROM transactions WHERE username = '"+getKeyFromValue(customers, customer)+"';";
+		String query = "SELECT date, type, result, notes FROM transactions WHERE username = '"+getKeyFromValue(users, customer)+"';";
 		String transactions = "Your transaction history: \n";
 		Statement statement;
 
@@ -292,9 +304,9 @@ public class NewBank {
 	
 		
 	//Database methods
-	public static <Key, Value> Key getKeyFromValue(Map<Key, Customer> map, Value value) 
+	public static <Key, Value> Key getKeyFromValue(Map<Key, User> map, Value value)
 	{
-		for (Map.Entry<Key, Customer> entry : map.entrySet()) {
+		for (Map.Entry<Key, User> entry : map.entrySet()) {
 			if (value.equals(entry.getValue())) {
 				return entry.getKey();
 				}
@@ -394,7 +406,7 @@ public class NewBank {
 	}
 	
 	//to be added
-	private void loadAccountBalancesFromDatabase(HashMap<String,Customer> customers)
+	private void loadAccountBalancesFromDatabase(HashMap<String,User> customers)
 	{
 		
 		
@@ -420,7 +432,7 @@ public class NewBank {
 		try
 		{
 			ps = connection.prepareStatement(statement);
-		    ps.setString(1, getKeyFromValue(customers, customer));
+		    ps.setString(1, getKeyFromValue(users, customer));
 		    ps.setString(2, day.format(now));
 		    ps.setString(3, month.format(now));
 		    ps.setString(4, year.format(now));
@@ -480,7 +492,7 @@ public class NewBank {
 			{
 				ps = connection.prepareStatement(query);
 			    ps.setDouble(1, amount);
-			    ps.setString(2, getKeyFromValue(customers, customer));
+			    ps.setString(2, getKeyFromValue(users, customer));
 			    ps.executeUpdate();
 			}
 			catch (Exception e)
@@ -495,7 +507,7 @@ public class NewBank {
 			{
 				ps = connection.prepareStatement(query);
 			    ps.setDouble(1, amount);
-			    ps.setString(2, getKeyFromValue(customers, customer));
+			    ps.setString(2, getKeyFromValue(users, customer));
 			    ps.executeUpdate();
 			}
 			catch (Exception e)
@@ -510,7 +522,7 @@ public class NewBank {
 			{
 				ps = connection.prepareStatement(query);
 			    ps.setDouble(1, amount);
-			    ps.setString(2, getKeyFromValue(customers, customer));
+			    ps.setString(2, getKeyFromValue(users, customer));
 			    ps.executeUpdate();
 			}
 			catch (Exception e)
@@ -538,7 +550,7 @@ public class NewBank {
 				{
 					ps = connection.prepareStatement(statement);
 				    ps.setString(1, amount);
-				    ps.setString(2, getKeyFromValue(customers, customer));
+				    ps.setString(2, getKeyFromValue(users, customer));
 				    ps.executeUpdate();
 				}
 				catch (Exception e)
@@ -553,7 +565,7 @@ public class NewBank {
 				{
 					ps = connection.prepareStatement(statement);
 				    ps.setString(1, amount);
-				    ps.setString(2, getKeyFromValue(customers, customer));
+				    ps.setString(2, getKeyFromValue(users, customer));
 				    ps.executeUpdate();
 				}
 				catch (Exception e)
@@ -568,7 +580,7 @@ public class NewBank {
 				{
 					ps = connection.prepareStatement(statement);
 				    ps.setString(1, amount);
-				    ps.setString(2, getKeyFromValue(customers, customer));
+				    ps.setString(2, getKeyFromValue(users, customer));
 				    ps.executeUpdate();
 				}
 				catch (Exception e)

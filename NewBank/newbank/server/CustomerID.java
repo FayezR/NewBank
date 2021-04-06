@@ -19,8 +19,7 @@ public class CustomerID {
 		return "CustomerID [key=" + key + ", getKey()=" + getKey() + ", getClass()=" + getClass() + ", hashCode()="
 				+ hashCode() + ", toString()=" + super.toString() + "]";
 	}
-	
-		
+
 	//setter for last activity
 	public void setTimeAtLastActivity(LocalTime lastActivityTime) {
 		timeAtLastActivity = lastActivityTime;

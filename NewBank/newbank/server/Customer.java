@@ -2,11 +2,12 @@ package newbank.server;
 
 import java.util.ArrayList;
 
-public class Customer {
+public class Customer extends User {
 	
 	private ArrayList<Account> accounts;
 	
-	public Customer() {
+	public Customer(String username, String pass) {
+		super(username, pass);
 		accounts = new ArrayList<>();
 	}
 	
@@ -18,10 +19,11 @@ public class Customer {
 		return s;
 	}
 
+	@Override
 	public void addAccount(Account account) {
 		accounts.add(account);		
 	}
-	
+
 	//check if the type of account exist
 	public boolean checkAccountType(String accountName) {
 		for(Account account: accounts) {
