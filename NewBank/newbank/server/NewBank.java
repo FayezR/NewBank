@@ -132,6 +132,7 @@ public class NewBank {
 				CustomerID borrower = MicroLoanMarket.microLoansAvailable.get(loanNumber).getBorrower();
 				String loanAmount = MicroLoanMarket.microLoansAvailable.get(loanNumber).getPrinciple().toString();
 				String[] payInstructions = {"PAY", "FROM", "MicroLoan", "TO", borrower.getKey() , "MicroLoan", loanAmount};	
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setWired(true);
 				return payOthers(customer, payInstructions);
 			}catch(ArrayIndexOutOfBoundsException e) {
 				 return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"

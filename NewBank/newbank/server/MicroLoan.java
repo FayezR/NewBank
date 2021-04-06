@@ -7,6 +7,8 @@ public class MicroLoan {
 	private Integer interestRate; //The annual interest rate
 	private CustomerID lender;
 	private CustomerID borrower;
+	private boolean isWired;
+	private boolean isReimbursed;
 	
 	//constructor
 	/*
@@ -58,7 +60,31 @@ public class MicroLoan {
 		this.borrower = borrower;
 	}
 	
-	//methods
+	
+	
+	public boolean isWired() {
+		return isWired;
+	}
+
+
+	public void setWired(boolean isWired) {
+		this.isWired = isWired;
+	}
+
+
+	public boolean isReimbursed() {
+		return isReimbursed;
+	}
+
+
+	public void setReimbursed(boolean isReimbursed) {
+		this.isReimbursed = isReimbursed;
+	}
+
+
+	
+	
+	
 	
 	public Integer calculateInterestDue() {
 		Integer interestDue;
@@ -71,10 +97,10 @@ public class MicroLoan {
 	public String toString() {
 		if(this.borrower==null) {
 			return "MicroLoan [principle=" + principle + ", interestRate=" + interestRate + ", lender=" + lender.getKey()
-			+ ", borrower=" + borrower + "]";
+			+ ", borrower=" + borrower + ", isWired=" + isWired + ", isReimbursed="+ isReimbursed +"]";
 		}else {
 			return "MicroLoan [principle=" + principle + ", interestRate=" + interestRate + ", lender=" + lender.getKey()
-			+ ", borrower=" + borrower.getKey() + "]";
+			+ ", borrower=" + borrower.getKey() + ", isWired=" + isWired + ", isReimbursed="+ isReimbursed + "]";
 		}
 	}
 
