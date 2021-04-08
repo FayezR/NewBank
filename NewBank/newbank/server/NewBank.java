@@ -5,6 +5,7 @@ import java.util.Map;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 public class NewBank {
 	
@@ -140,9 +141,36 @@ public class NewBank {
 		return "FAIL";
 	}
 
-	public synchronized String processAdminRequest(UserID admin, String [] requests){
-		return "g";
+	public synchronized String processAdminRequest(UserID admin, String [] request) {
+		if (users.containsKey(admin.getKey())) {
+			switch (request[0]) {
+
+				case "MENU":
+					return Menu.printAdminMenu();
+				case "1" : return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";
+				case "NEWCUSTOMER": try{ return AddNewCustomer(request[1]);} // -FR
+									catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";}
+				default: return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
+			}
+		}
+		return "FAIL";
 	}
+
+	private String AddNewCustomer(String username){
+		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		StringBuilder b = new StringBuilder();
+		Random rnd = new Random();
+		while (b.length() < 7) { // length of the random string.
+				int index = (int) (rnd.nextFloat() * chars.length());
+				b.append(chars.charAt(index));
+			}
+			String tempPass = b.toString();
+		Customer customer = new Customer(username, tempPass);
+		customer.addAccount(new Account("Main", 00.0));
+		users.put(username, customer);
+		return "Success - Account with username '" + username + "' and temporary password '" + tempPass + "' has been created!";
+	}
+
 	private String showMyAccounts(UserID customer) {
 		return "Available accounts:\n" + (users.get(customer.getKey())).accountsToString();
 	}

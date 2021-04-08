@@ -53,7 +53,7 @@ public class NewBankClientHandler extends Thread{
 					}
 				}
 				else if(bank.isAdmin(user)) {
-						out.println("Welcome Admin!");
+						out.println(Menu.printAdminMenu());
 						while (true) {
 							String userInput = in.readLine();
 							System.out.println("Request from " + user.getKey() + " - " + userInput);
