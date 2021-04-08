@@ -132,7 +132,10 @@ public class NewBank {
 
 			//Internal Money Transfer FR1.5 Added by Abhinav
 			case "10" : return paySelf(customer, request);
-			case "TRANSFER" : return paySelf(customer, request);			
+			case "TRANSFER" : return paySelf(customer, request);
+
+			case "11" : return "Logout";
+			case "LOGOUT" : return "Logout";
 
 
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
@@ -150,6 +153,9 @@ public class NewBank {
 				case "1" : return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";
 				case "NEWCUSTOMER": try{ return AddNewCustomer(request[1]);} // -FR
 									catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";}
+
+				case "2" : return "Logout";
+				case "LOGOUT" : return "Logout";
 				default: return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
 		}

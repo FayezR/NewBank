@@ -49,7 +49,12 @@ public class NewBankClientHandler extends Thread{
 						// splits 'userInput' into separate words and stores them in a String array 'request' -FR
 						String[] request = userInput.split(" ");
 						String responce = bank.processRequest(user, request);
-						out.println(responce);
+						if (responce == "Logout"){
+							out.println("You have successfully logged out. You can now login with a different account\n");
+							Thread.currentThread().interrupt();
+							run();
+						}
+						else {out.println(responce);}
 					}
 				}
 				else if(bank.isAdmin(user)) {
@@ -60,6 +65,12 @@ public class NewBankClientHandler extends Thread{
 							// splits 'userInput' into separate words and stores them in a String array 'request' -FR
 							String[] request = userInput.split(" ");
 							String response = bank.processAdminRequest(user, request);
+							if (response == "Logout"){
+								out.println("You have successfully logged out. You can now login with a different account\n");
+								Thread.currentThread().interrupt();
+								run();
+							}
+							else {out.println(response);}
 							out.println(response);
 						}
 				}
@@ -87,6 +98,5 @@ public class NewBankClientHandler extends Thread{
 		}
 	}
 
-	
-	
+
 }
