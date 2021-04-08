@@ -88,7 +88,8 @@ public class MicroLoan {
 	
 	public Integer calculateInterestDue() {
 		Integer interestDue;
-		interestDue =(int)Math.round(getInterestRate() * getPrinciple() /12/100);//rounding the amount to $
+		interestDue =(int)Math.round(getInterestRate() * getPrinciple()/100);//rounding the amount to $
+		interestDue = interestDue +1; //adding $1 for admin fee;
 		return interestDue;
 	}
 	

@@ -140,6 +140,22 @@ public class NewBank {
 			}
 			
 			
+			case "10": return "to reimburse your MicroLoan, please enter the command in the form:\n"
+					+ "REIMBURSE LOAN <The number of the loan starting by counting 0>";
+			case "REIMBURSE": try {
+				Integer loanNumber = Integer.parseInt(request[2]);
+				CustomerID lender = MicroLoanMarket.microLoansAvailable.get(loanNumber).getLender();
+				int loanAmount = MicroLoanMarket.microLoansAvailable.get(loanNumber).getPrinciple();
+				int interestDue = MicroLoanMarket.microLoansAvailable.get(loanNumber).calculateInterestDue();
+				int reimbursementAmount = loanAmount + interestDue;
+				String totalDue = String.valueOf(reimbursementAmount);
+				String[] payInstructions = {"PAY", "FROM", "Main", "TO", lender.getKey().toString() , "Main", totalDue.toString()};
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setReimbursed(true);
+				return payOthers(customer, payInstructions);
+			}catch(ArrayIndexOutOfBoundsException e) {
+				return "to reimburse your MicroLoan, please enter the command in the form:\n"
+						+ "REIMBURSE LOAN <The number of the loan starting by counting 0>";
+			}
 			
 			
 			
@@ -147,7 +163,7 @@ public class NewBank {
 					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
 					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
 					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() + "\n" 
-					+ "Borrower: " + MicroLoanMarket.microLoansAvailable.get(0).getBorrower().getKey();
+					+ "Borrower: " + MicroLoanMarket.microLoansAvailable.get(0).getBorrower().getKey(); 
 			
 			
 			

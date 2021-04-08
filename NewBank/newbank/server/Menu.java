@@ -15,6 +15,7 @@ public static String printMenu() {
 			+ "7- Show MicroLoans Available.\n"
 			+ "8- Acquire a Micro-Loan.(for potential borrower)\n"
 			+ "9- Transferring confirmed Microloan to borrower (for lender).\n"
+			+ "10- Reimbursing Loan. \n"
 			+ "(Select a number or type \"MENU\" to see the Menu again).\n";
 	return menu;
 }

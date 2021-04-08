@@ -8,12 +8,15 @@ public class MicroLoanMarket {
 
 	
 	public static String showMicroLoansAvailable() {
+		String s = "";
 		if(microLoansAvailable==null && microLoansAvailable.isEmpty()) {
-			return "There is no available MicroLoan to borrow at this moment.";
+			s = "There is no available MicroLoan to borrow at this moment.";
 		}else {
-			return microLoansAvailable.toString();
+			for(MicroLoan loan: microLoansAvailable) {
+				s = s + loan.toString() + "\n";
+			}
 		}
-		
+		return s;
 	}
 
 
