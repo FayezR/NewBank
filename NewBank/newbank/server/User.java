@@ -16,7 +16,7 @@ public class User {
         return null;
     }
 
-    public String createMicroLoan(int parseInt, int parseInt1, CustomerID customer) {
+    public String createMicroLoan(int parseInt, int parseInt1, UserID customer) {
         return null;
     }
 

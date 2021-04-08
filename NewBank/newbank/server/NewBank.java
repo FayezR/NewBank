@@ -1,13 +1,11 @@
 package newbank.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 public class NewBank {
 	
@@ -55,7 +53,7 @@ public class NewBank {
 		if (users.containsKey(userName)){ //checks if username exists
 			User user = users.get(userName);
 			if (user.getPass().equals(password)){ //checks if password is correct - FR
-				 CustomerID cID = new CustomerID(userName);
+				 UserID cID = new UserID(userName);
 				 return true;
 			}
 			else {return false;}
@@ -63,43 +61,35 @@ public class NewBank {
 		return false;
 	}
 
-	public synchronized CustomerID getCustomerID (String userName){
-		CustomerID cID = new CustomerID(userName);
-		return cID;
+	public synchronized UserID getUserID (String userName){
+		UserID uID = new UserID(userName);
+		return uID;
 	}
+	//Check if user is a customer - FR
+	public synchronized Boolean isCustomer (UserID user){ return users.get(user.getKey()).getClass() == newbank.server.Customer.class;}
+
+	//Checks if user is an admin - FR
+	public synchronized Boolean isAdmin (UserID user){ return users.get(user.getKey()).getClass() == newbank.server.Admin.class;}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String [] request) {
+	public synchronized String processRequest(UserID customer, String [] request) {
 		if(users.containsKey(customer.getKey())) {
 
 			switch(request [0]) {
 			
 			//Show the Menu at request (RT)
 			case "MENU" : return Menu.printMenu();
-			
 			//Showing the accounts
 			case "1" : return showMyAccounts(customer);
-			
-			//create new account
-			case "2" : try { return newAccount(customer, request[1]);}
-						//error is caught if user doesn't specify a name for the new account
+			//Newaccount functionality added by Fayez FR
+			case "2" :
+				case "NEWACCOUNT" :
+					try { return newAccount(customer, request[1]);}
 						catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
-			
-			//create new account (bis) - so that typing "NEWACCOUNT" also works.(This is so that we don't have to amend previous code -RT)
-			case "NEWACCOUNT" : try { return newAccount(customer, request[1]);}
-			//error is caught if user doesn't specify a name for the new account
-			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
-			
-			
 			//External Money Transfer FR1.5 Added by Abhinav
-			case "3" : return payOthers(customer, request);
-			
-			//Keeping "PAY" so that we don't have to amend previous code (RT)
-			case "PAY" : return payOthers(customer, request);
-			
-			
+			case "3" :
+				case "PAY" : return payOthers(customer, request);
 			//Adding MicroLoan functionality (added by Raymond (RT))
-			
 			//Create a MicroLoan account
 			case "4":  try { return openMicroLoanAccount(customer);}
 			//error is caught if user doesn't specify a name for the new account
@@ -109,59 +99,83 @@ public class NewBank {
 			//error is caught if user doesn't specify a name for the new account
 			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
 			
-			
 			case "5": return "To create a MicroLoan, please enter command in the form:\n "
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
 				return users.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
-					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
+					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			}
-			
-			case "6": 
-			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};	
+
+			case "6":
+			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};
 			return payOthers(customer, request1);
-			
+
 			case "7": try{return "Following MicroLoans are available to take:\n"+ MicroLoanMarket.showMicroLoansAvailable() +"\n";
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
-			
-			
+
 			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
 					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 			case "CONFIRM": try {
-				return "The loan you want is:\n"+  
-						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n" 
+				return "The loan you want is:\n"+
+						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n"
 						+"Calling the method to take up loan...";
 				}catch(ArrayIndexOutOfBoundsException e) {
 					return "To take up a MicroLoan, please enter command in the form:\n "
 							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
 			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
-			
-			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
-					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
-					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
-					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
-			
+
+
 			//Internal Money Transfer FR1.5 Added by Abhinav
 			case "10" : return paySelf(customer, request);
 			case "TRANSFER" : return paySelf(customer, request);			
-			
+
+
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
-			
 		}
 		return "FAIL";
 	}
-	
-	private String showMyAccounts(CustomerID customer) {
+
+	public synchronized String processAdminRequest(UserID admin, String [] request) {
+		if (users.containsKey(admin.getKey())) {
+			switch (request[0]) {
+
+				case "MENU":
+					return Menu.printAdminMenu();
+				case "1" : return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";
+				case "NEWCUSTOMER": try{ return AddNewCustomer(request[1]);} // -FR
+									catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWCUSTOMER command in the form: NEWCUSTOMER <name>.\n";}
+				default: return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
+			}
+		}
+		return "FAIL";
+	}
+
+	private String AddNewCustomer(String username){
+		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		StringBuilder b = new StringBuilder();
+		Random rnd = new Random();
+		while (b.length() < 7) { // length of the random string.
+				int index = (int) (rnd.nextFloat() * chars.length());
+				b.append(chars.charAt(index));
+			}
+			String tempPass = b.toString();
+		Customer customer = new Customer(username, tempPass);
+		customer.addAccount(new Account("Main", 00.0));
+		users.put(username, customer);
+		return "Success - Account with username '" + username + "' and temporary password '" + tempPass + "' has been created!";
+	}
+
+	private String showMyAccounts(UserID customer) {
 		return "Available accounts:\n" + (users.get(customer.getKey())).accountsToString();
 	}
 
-	private String newAccount (CustomerID customer, String name) {
+	private String newAccount (UserID customer, String name) {
 		String notes = name + " account added";
 		users.get(customer.getKey()).addAccount(new Account (name, 0.00));
 		addNewAccount((Customer) users.get(customer.getKey()), name);
@@ -170,7 +184,7 @@ public class NewBank {
 	}
 	
 	//Method when "PAY" Keyword is used
-	private String payOthers (CustomerID customer, String[] request) {
+	private String payOthers (UserID customer, String[] request) {
 		if(request.length==1) { //only PAY mentioned
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
 				"PAY FROM <YourAccountType> TO <Person/Company> <RecepientAccountType> <Amount>";
@@ -184,7 +198,7 @@ public class NewBank {
 	}
 	
 	//Method when "item-9 pay self is selected" Keyword is used
-	private String paySelf (CustomerID customer, String[] request) {
+	private String paySelf (UserID customer, String[] request) {
 		if(request.length==1) { //only TRANSFER mentioned
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
 				"TRANSFER FROM <YourAccountType> TO <RecepientAccountType> <Amount>";
@@ -199,7 +213,7 @@ public class NewBank {
 	}
 	
 	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
-	private String makePayment (CustomerID customer, String[] request) {
+	private String makePayment (UserID customer, String[] request) {
 		//check if donor's account type is correct
 
 		Customer donorCustomer  = (Customer) users.get(customer.getKey());
@@ -261,7 +275,7 @@ public class NewBank {
 
 	//Methods related to MicroLoan
 
-	private String openMicroLoanAccount (CustomerID customer) {
+	private String openMicroLoanAccount (UserID customer) {
 		String name="MicroLoan";
 		String notes = "Microloan account added";
 		users.get(customer.getKey()).addAccount(new Account (name, 0.00));

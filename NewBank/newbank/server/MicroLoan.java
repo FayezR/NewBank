@@ -5,8 +5,8 @@ public class MicroLoan {
 	//properties
 	private Integer principle; //The amount of the loan
 	private Integer interestRate; //The annual interest rate
-	private CustomerID lender;
-	private CustomerID borrower;
+	private UserID lender;
+	private UserID borrower;
 	
 	//constructor
 	/*
@@ -17,7 +17,7 @@ public class MicroLoan {
 		
 	}*/
 	
-	public MicroLoan(Integer principle, Integer interestRate, CustomerID lender) {
+	public MicroLoan(Integer principle, Integer interestRate, UserID lender) {
 		super();
 		this.principle = principle;
 		this.interestRate = interestRate;
@@ -42,19 +42,19 @@ public class MicroLoan {
 		this.interestRate = interestRate;
 	}
 
-	public CustomerID getLender() {
+	public UserID getLender() {
 		return lender;
 	}
 	
-	public void setLender(CustomerID lender) {
+	public void setLender(UserID lender) {
 		this.lender = lender;
 	}
 	
-	public CustomerID getBorrower() {
+	public UserID getBorrower() {
 		return borrower;
 	}
 
-	public void setBorrower(CustomerID borrower) {
+	public void setBorrower(UserID borrower) {
 		this.borrower = borrower;
 	}
 	

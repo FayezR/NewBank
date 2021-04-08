@@ -2,11 +2,11 @@ package newbank.server;
 
 import java.time.LocalTime;
 
-public class CustomerID {
+public class UserID {
 	private String key;
 	private LocalTime timeAtLastActivity;
 	
-	public CustomerID(String key) {
+	public UserID(String key) {
 		this.key = key;
 	}
 	
