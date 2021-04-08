@@ -68,6 +68,15 @@ public class NewBank {
 		return cID;
 	}
 
+	public synchronized Boolean isCustomer (CustomerID customer){
+		System.out.println(users.get(customer.getKey()).getClass());
+		return users.get(customer.getKey()).getClass() == newbank.server.Customer.class;
+	}
+
+	public synchronized Boolean isAdmin (CustomerID customer){
+		return users.get(customer.getKey()).getClass() == newbank.server.Admin.class;
+		}
+
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String [] request) {
 		if(users.containsKey(customer.getKey())) {
@@ -76,30 +85,17 @@ public class NewBank {
 			
 			//Show the Menu at request (RT)
 			case "MENU" : return Menu.printMenu();
-			
 			//Showing the accounts
 			case "1" : return showMyAccounts(customer);
-			
-			//create new account
-			case "2" : try { return newAccount(customer, request[1]);}
-						//error is caught if user doesn't specify a name for the new account
+			//Newaccount functionality added by Fayez FR
+			case "2" :
+				case "NEWACCOUNT" :
+					try { return newAccount(customer, request[1]);}
 						catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
-			
-			//create new account (bis) - so that typing "NEWACCOUNT" also works.(This is so that we don't have to amend previous code -RT)
-			case "NEWACCOUNT" : try { return newAccount(customer, request[1]);}
-			//error is caught if user doesn't specify a name for the new account
-			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the NEWACCOUNT command in the form: NEWACCOUNT <name>.\n";}
-			
-			
 			//External Money Transfer FR1.5 Added by Abhinav
-			case "3" : return payOthers(customer, request);
-			
-			//Keeping "PAY" so that we don't have to amend previous code (RT)
-			case "PAY" : return payOthers(customer, request);
-			
-			
+			case "3" :
+				case "PAY" : return payOthers(customer, request);
 			//Adding MicroLoan functionality (added by Raymond (RT))
-			
 			//Create a MicroLoan account
 			case "4":  try { return openMicroLoanAccount(customer);}
 			//error is caught if user doesn't specify a name for the new account
@@ -109,54 +105,51 @@ public class NewBank {
 			//error is caught if user doesn't specify a name for the new account
 			catch (ArrayIndexOutOfBoundsException e) {return "Please enter the OpenMicroLoanAccount command in the form: OpenMicroLoanAccount.\n";}
 			
-			
 			case "5": return "To create a MicroLoan, please enter command in the form:\n "
 						+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
 				return users.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
-					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";	
+					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			}
-			
-			case "6": 
-			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};	
+
+			case "6":
+			String[] request1 = {"PAY", "FROM", "Main", "TO", customer.getKey() , "MicroLoan",tempLoanAmount};
 			return payOthers(customer, request1);
-			
+
 			case "7": try{return "Following MicroLoans are available to take:\n"+ MicroLoanMarket.showMicroLoansAvailable() +"\n";
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
-			
-			
+
 			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
 					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 			case "CONFIRM": try {
-				return "The loan you want is:\n"+  
-						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n" 
+				return "The loan you want is:\n"+
+						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n"
 						+"Calling the method to take up loan...";
 				}catch(ArrayIndexOutOfBoundsException e) {
 					return "To take up a MicroLoan, please enter command in the form:\n "
 							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
 			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
-			
-			case "TEST": return  MicroLoanMarket.microLoansAvailable.get(0).toString() +"\n"
-					+ "Principle: " + MicroLoanMarket.microLoansAvailable.get(0).getPrinciple().toString() + "\n"
-					+ "Interest Rate: " + MicroLoanMarket.microLoansAvailable.get(0).getInterestRate().toString() + "\n" 
-					+ "Lender: " + MicroLoanMarket.microLoansAvailable.get(0).getLender().getKey().toString() ;
-			
+
+
 			//Internal Money Transfer FR1.5 Added by Abhinav
 			case "10" : return paySelf(customer, request);
 			case "TRANSFER" : return paySelf(customer, request);			
-			
+
+
 			default : return "FAIL - Please enter a number from the Menu or Type 'Menu' to see the Menu again.\n";
 			}
-			
 		}
 		return "FAIL";
 	}
-	
+
+	public synchronized String processAdminRequest(CustomerID customer, String [] requests){
+		return "g";
+	}
 	private String showMyAccounts(CustomerID customer) {
 		return "Available accounts:\n" + (users.get(customer.getKey())).accountsToString();
 	}
