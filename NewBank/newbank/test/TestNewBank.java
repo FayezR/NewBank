@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import newbank.server.CustomerID;
+import newbank.server.UserID;
 import newbank.server.NewBank;
 
 class TestNewBank {
@@ -15,7 +15,7 @@ class TestNewBank {
 	void testPayOthers() {
 		bank = NewBank.getBank();
 		bank.checkLogInDetails("Bhagy", "12345");
-		CustomerID customer = bank.getCustomerID("Bhagy");
+		UserID customer = bank.getUserID("Bhagy");
 		String [] request = new String [] {"PAY", "FROM", "Main", "TO", "John", "Checking", "100"};
 		String output =  bank.processRequest(customer, request);
 		//String expectedOutput = "SUCCESS - " + "Your account balance:" + "\n" + showMyAccounts(customer);

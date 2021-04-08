@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -33,34 +32,34 @@ public class NewBankClientHandler extends Thread{
 
 			// authenticate user - checks if Username exists and password is correct -FR
 			if(bank.checkLogInDetails(userName, password)) {
-				CustomerID customer = bank.getCustomerID(userName); //get customer ID token from bank for use in subsequent requests
-				customer.setTimeAtLastActivity(LocalTime.now());
-				if(bank.isCustomer(customer)) {
+				UserID user = bank.getUserID(userName); //get user ID token from bank for use in subsequent requests
+				user.setTimeAtLastActivity(LocalTime.now());
+				if(bank.isCustomer(user)) {
 					out.println(Menu.printMenu());
 					while(true) {
 						//check for last activity > 2 mins
-						Long timeDuration = Duration.between(customer.getTimeAtLastActivity(), LocalTime.now()).toMinutes();
+						Long timeDuration = Duration.between(user.getTimeAtLastActivity(), LocalTime.now()).toMinutes();
 						if (timeDuration >= 1) {
 							Thread.currentThread().interrupt();
 							this.run();
 						}
-						customer.setTimeAtLastActivity(LocalTime.now());
+						user.setTimeAtLastActivity(LocalTime.now());
 						String userInput = in.readLine();
-						System.out.println("Request from " + customer.getKey() + " - " + userInput);
+						System.out.println("Request from " + user.getKey() + " - " + userInput);
 						// splits 'userInput' into separate words and stores them in a String array 'request' -FR
 						String[] request = userInput.split(" ");
-						String responce = bank.processRequest(customer, request);
+						String responce = bank.processRequest(user, request);
 						out.println(responce);
 					}
 				}
-				else if(bank.isAdmin(customer)) {
+				else if(bank.isAdmin(user)) {
 						out.println("Welcome Admin!");
 						while (true) {
 							String userInput = in.readLine();
-							System.out.println("Request from " + customer.getKey() + " - " + userInput);
+							System.out.println("Request from " + user.getKey() + " - " + userInput);
 							// splits 'userInput' into separate words and stores them in a String array 'request' -FR
 							String[] request = userInput.split(" ");
-							String response = bank.processAdminRequest(customer, request);
+							String response = bank.processAdminRequest(user, request);
 							out.println(response);
 						}
 				}

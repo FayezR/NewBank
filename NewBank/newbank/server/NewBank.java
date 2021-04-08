@@ -1,12 +1,9 @@
 package newbank.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class NewBank {
@@ -55,7 +52,7 @@ public class NewBank {
 		if (users.containsKey(userName)){ //checks if username exists
 			User user = users.get(userName);
 			if (user.getPass().equals(password)){ //checks if password is correct - FR
-				 CustomerID cID = new CustomerID(userName);
+				 UserID cID = new UserID(userName);
 				 return true;
 			}
 			else {return false;}
@@ -63,22 +60,18 @@ public class NewBank {
 		return false;
 	}
 
-	public synchronized CustomerID getCustomerID (String userName){
-		CustomerID cID = new CustomerID(userName);
-		return cID;
+	public synchronized UserID getUserID (String userName){
+		UserID uID = new UserID(userName);
+		return uID;
 	}
+	//Check if user is a customer - FR
+	public synchronized Boolean isCustomer (UserID user){ return users.get(user.getKey()).getClass() == newbank.server.Customer.class;}
 
-	public synchronized Boolean isCustomer (CustomerID customer){
-		System.out.println(users.get(customer.getKey()).getClass());
-		return users.get(customer.getKey()).getClass() == newbank.server.Customer.class;
-	}
-
-	public synchronized Boolean isAdmin (CustomerID customer){
-		return users.get(customer.getKey()).getClass() == newbank.server.Admin.class;
-		}
+	//Checks if user is an admin - FR
+	public synchronized Boolean isAdmin (UserID user){ return users.get(user.getKey()).getClass() == newbank.server.Admin.class;}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String [] request) {
+	public synchronized String processRequest(UserID customer, String [] request) {
 		if(users.containsKey(customer.getKey())) {
 
 			switch(request [0]) {
@@ -147,14 +140,14 @@ public class NewBank {
 		return "FAIL";
 	}
 
-	public synchronized String processAdminRequest(CustomerID customer, String [] requests){
+	public synchronized String processAdminRequest(UserID admin, String [] requests){
 		return "g";
 	}
-	private String showMyAccounts(CustomerID customer) {
+	private String showMyAccounts(UserID customer) {
 		return "Available accounts:\n" + (users.get(customer.getKey())).accountsToString();
 	}
 
-	private String newAccount (CustomerID customer, String name) {
+	private String newAccount (UserID customer, String name) {
 		String notes = name + " account added";
 		users.get(customer.getKey()).addAccount(new Account (name, 0.00));
 		addNewAccount((Customer) users.get(customer.getKey()), name);
@@ -163,7 +156,7 @@ public class NewBank {
 	}
 	
 	//Method when "PAY" Keyword is used
-	private String payOthers (CustomerID customer, String[] request) {
+	private String payOthers (UserID customer, String[] request) {
 		if(request.length==1) { //only PAY mentioned
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
 				"PAY FROM <YourAccountType> TO <Person/Company> <RecepientAccountType> <Amount>";
@@ -177,7 +170,7 @@ public class NewBank {
 	}
 	
 	//Method when "item-9 pay self is selected" Keyword is used
-	private String paySelf (CustomerID customer, String[] request) {
+	private String paySelf (UserID customer, String[] request) {
 		if(request.length==1) { //only TRANSFER mentioned
 			return "You have following accounts" + "\n" + showMyAccounts(customer)+ "Please select the account type for payment in the form:" +
 				"TRANSFER FROM <YourAccountType> TO <RecepientAccountType> <Amount>";
@@ -192,7 +185,7 @@ public class NewBank {
 	}
 	
 	//Method when "PAY FROM <AccountType> TO <Person/Company> <RecepientAccountType> <Amount>" is used
-	private String makePayment (CustomerID customer, String[] request) {
+	private String makePayment (UserID customer, String[] request) {
 		//check if donor's account type is correct
 
 		Customer donorCustomer  = (Customer) users.get(customer.getKey());
@@ -254,7 +247,7 @@ public class NewBank {
 
 	//Methods related to MicroLoan
 
-	private String openMicroLoanAccount (CustomerID customer) {
+	private String openMicroLoanAccount (UserID customer) {
 		String name="MicroLoan";
 		String notes = "Microloan account added";
 		users.get(customer.getKey()).addAccount(new Account (name, 0.00));
