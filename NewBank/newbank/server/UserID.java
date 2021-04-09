@@ -30,5 +30,8 @@ public class UserID {
 		return timeAtLastActivity;
 	}
 	
-	
+	public String createMicroLoan(Integer principle, Integer interestRate, UserID lender) {
+		MicroLoan ml = new MicroLoan(principle, interestRate, lender);
+		MicroLoanMarket.microLoansAvailable.add(ml);
+		return "Success: MicroLoan created: " + ml.toString();}
 }

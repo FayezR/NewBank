@@ -44,7 +44,7 @@ public class Customer extends User {
 			return null;
 		}
 	
-		
+	
 	public String createMicroLoan(Integer principle, Integer interestRate, UserID lender) {
 		MicroLoan ml = new MicroLoan(principle, interestRate, lender);
 		MicroLoanMarket.microLoansAvailable.add(ml);

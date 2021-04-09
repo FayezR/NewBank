@@ -10,6 +10,7 @@ import java.util.Random;
 public class NewBank {
 	
 	private static final NewBank bank = new NewBank();
+	
 	private HashMap<String,User> users;
 	
 	private String tempLoanAmount="0"; 
@@ -104,6 +105,8 @@ public class NewBank {
 			case "PRINCIPLE": try {
 				tempLoanAmount=request[1];
 				return users.get(customer.getKey()).createMicroLoan(Integer.parseInt(request[1]), Integer.parseInt(request[4]),customer) ;
+				
+				
 			}catch(ArrayIndexOutOfBoundsException e) {return "To create a MicroLoan, please enter command in the form: \n "
 					+ "PRINCIPLE <amount> INTEREST RATE <amount> \n";
 			}
