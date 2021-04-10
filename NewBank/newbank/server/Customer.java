@@ -50,6 +50,7 @@ public class Customer extends User {
 		MicroLoanMarket.microLoansAvailable.add(ml);
 		return "Success: MicroLoan created: " + ml.toString();
 	}
+	
 
 	@Override
 	public String toString() {

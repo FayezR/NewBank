@@ -119,7 +119,8 @@ public class NewBank {
 			}catch(ArrayIndexOutOfBoundsException e) {
 				return "No available MicroLoans at this Moment";
 			}
-
+			
+			/*
 			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
 					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 			case "CONFIRM": try {
@@ -130,6 +131,23 @@ public class NewBank {
 					return "To take up a MicroLoan, please enter command in the form:\n "
 							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
 				}
+			*/
+			
+			case "8": return "To take up a MicroLoan, please enter command in the form:\n"
+			 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+			case "CONFIRMING": try {
+				Integer loanNumber = Integer.parseInt(request[5]);
+				//update the requested loan with the borrower name
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setBorrower(customer);
+					return "The loan is confirmed to you (borrower's field updated), the lender shall initiate the payment:\n"+  
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).toString() + "\n";
+				}catch(ArrayIndexOutOfBoundsException e) {
+					return "To take up a MicroLoan, please enter command in the form:\n"
+					 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
+				}
+			
+			
+			
 			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
 
 
@@ -137,7 +155,7 @@ public class NewBank {
 			case "10" : return paySelf(customer, request);
 			case "TRANSFER" : return paySelf(customer, request);
 
-			case "11" : return "Logout";
+			case "13" : return "Logout";
 			case "LOGOUT" : return "Logout";
 
 

@@ -15,7 +15,11 @@ public class Menu {
 				+ "7- Show MicroLoans Available.\n"
 				+ "8- Acquire a Micro-Loan.\n"
 				+ "9- Show full transaction history.\n"
-				+ "11- Logout";
+				+ "10- \n"
+				+ "11- Transferring confirmed Microloan to borrower (for lender).\n"
+				+ "12- Reimbursing Loan. \n"
+				+ "(Select a number or type \"MENU\" to see the Menu again).\n"
+				+ "13- Logout";
 		return menu;
 	}
 	
