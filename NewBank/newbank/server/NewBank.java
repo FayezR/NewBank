@@ -155,6 +155,36 @@ public class NewBank {
 			case "10" : return paySelf(customer, request);
 			case "TRANSFER" : return paySelf(customer, request);
 
+			
+			case "11": return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"
+			 + "TRANSFERRING LOAN <The number of the loan starting by counting 0>";
+			case "TRANSFERRING": try {
+				Integer loanNumber = Integer.parseInt(request[2]);
+				UserID borrower = MicroLoanMarket.microLoansAvailable.get(loanNumber).getBorrower();
+				String loanAmount = MicroLoanMarket.microLoansAvailable.get(loanNumber).getPrinciple().toString();
+				String[] payInstructions = {"PAY", "FROM", "MicroLoan", "TO", borrower.getKey() , "MicroLoan", loanAmount};	
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setWired(true);
+				return payOthers(customer, payInstructions);
+			}catch(ArrayIndexOutOfBoundsException e) {
+				 return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"
+						 + "TRANSFER LOAN <The number of the loan starting by counting 0>";
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			case "13" : return "Logout";
 			case "LOGOUT" : return "Logout";
 
