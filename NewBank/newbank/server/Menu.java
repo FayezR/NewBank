@@ -15,6 +15,7 @@ public class Menu {
 				+ "7- Show MicroLoans Available.\n"
 				+ "8- Acquire a Micro-Loan.\n"
 				+ "9- Show full transaction history.\n"
+				+ "10-Transfer internally within accounts. \n"
 				+ "11- Logout";
 		return menu;
 	}

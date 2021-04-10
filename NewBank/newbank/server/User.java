@@ -16,8 +16,10 @@ public class User {
         return null;
     }
 
-    public String createMicroLoan(int parseInt, int parseInt1, UserID customer) {
-        return null;
+    public String createMicroLoan(Integer principle, Integer interestRate, UserID lender) {
+		MicroLoan ml = new MicroLoan(principle, interestRate, lender);
+		MicroLoanMarket.microLoansAvailable.add(ml);
+		return "Success: MicroLoan created: " + ml.toString();
     }
 
     public String getUsername(){
