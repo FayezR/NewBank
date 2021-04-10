@@ -120,18 +120,7 @@ public class NewBank {
 				return "No available MicroLoans at this Moment";
 			}
 			
-			/*
-			case "8": return "To take up a MicroLoan, please enter command in the form:\n "
-					 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
-			case "CONFIRM": try {
-				return "The loan you want is:\n"+
-						MicroLoanMarket.microLoansAvailable.get(Integer.parseInt(request[5])).toString() + "\n"
-						+"Calling the method to take up loan...";
-				}catch(ArrayIndexOutOfBoundsException e) {
-					return "To take up a MicroLoan, please enter command in the form:\n "
-							 + "CONFIRM TAKING UP THE LOAN <The number of the loan starting by counting 0>";
-				}
-			*/
+			
 			
 			case "8": return "To take up a MicroLoan, please enter command in the form:\n"
 			 + "CONFIRMING TAKING UP THE LOAN <The number of the loan starting by counting 0>";
@@ -147,7 +136,6 @@ public class NewBank {
 				}
 			
 			
-			
 			case "9": return  showTransactionHistory((Customer) users.get(customer.getKey()));
 
 
@@ -156,6 +144,7 @@ public class NewBank {
 			case "TRANSFER" : return paySelf(customer, request);
 
 			
+			//To transfer the loan from MicroLoan a/c to MicroLoan a/c. (RT)
 			case "11": return "To tranfer your MicroLoan to borrower, please enter command in the form:\n"
 			 + "TRANSFERRING LOAN <The number of the loan starting by counting 0>";
 			case "TRANSFERRING": try {
@@ -170,19 +159,23 @@ public class NewBank {
 						 + "TRANSFER LOAN <The number of the loan starting by counting 0>";
 			}
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			//To reimburse loan with interest from Main a/c to Main a/c. (RT)
+			case "12": return "to reimburse your MicroLoan, please enter the command in the form:\n"
+			+ "REIMBURSE LOAN <The number of the loan starting by counting 0>";
+			case "REIMBURSE": try {
+				Integer loanNumber = Integer.parseInt(request[2]);
+				UserID lender = MicroLoanMarket.microLoansAvailable.get(loanNumber).getLender();
+				int loanAmount = MicroLoanMarket.microLoansAvailable.get(loanNumber).getPrinciple();
+				int interestDue = MicroLoanMarket.microLoansAvailable.get(loanNumber).calculateInterestDue();
+				int reimbursementAmount = loanAmount + interestDue;
+				String totalDue = String.valueOf(reimbursementAmount);
+				String[] payInstructions = {"PAY", "FROM", "Main", "TO", lender.getKey().toString() , "Main", totalDue.toString()};
+				MicroLoanMarket.microLoansAvailable.get(loanNumber).setReimbursed(true);
+				return payOthers(customer, payInstructions);
+			}catch(ArrayIndexOutOfBoundsException e) {
+				return "to reimburse your MicroLoan, please enter the command in the form:\n"
+				+ "REIMBURSE LOAN <The number of the loan starting by counting 0>";
+			}
 			
 			
 			case "13" : return "Logout";
