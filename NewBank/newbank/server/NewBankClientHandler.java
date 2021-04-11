@@ -71,7 +71,6 @@ public class NewBankClientHandler extends Thread{
 								run();
 							}
 							else {out.println(response);}
-							out.println(response);
 						}
 				}
 
